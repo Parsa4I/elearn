@@ -36,6 +36,6 @@ class UserChangeForm(forms.ModelForm):
         fields = ["email", "password", "username", "is_active", "is_admin"]
 
 
-class UserLoginForm(forms.Form):
+class LoginForm(forms.Form):
     email = forms.CharField(label="Email/Username")
     password = forms.CharField(widget=forms.PasswordInput)
