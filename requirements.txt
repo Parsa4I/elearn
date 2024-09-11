@@ -1,2 +1,4 @@
-Django==5.1
+Django
 django-bootstrap-v5
+django-crispy-forms
+crispy_bootstrap5
