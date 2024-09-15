@@ -6,5 +6,30 @@ Course {{ course.title }}
 {% endblock %}
 
 {% block content %}
-<h1>{{ course.title }}</h1>
+<h1>{{ course.title }}<span class="text-muted"> by {{ course.teacher }}</span></h1>
+<hr>
+<p>{{ course.overview }}</p>
+{% if request.user == course.teacher %}
+<a href="{% url 'courses:module_create' course.slug %}" class="btn btn-primary">Add new module</a>
+{% endif %}
+<br>
+<div class="align-items-center">
+  {% for module in course.modules.all %}
+  <div class="row justify-content-center m-2">
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-header text-center">
+          <b>{{ module.title }}</b>
+        </div>
+        <div class="card-body">
+          <p>{{ module.description }}</p>
+        </div>
+        <div class="card-footer">
+          <a href="#" class="btn btn-primary">View</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
 {% endblock %}
