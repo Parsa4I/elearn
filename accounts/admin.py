@@ -8,19 +8,31 @@ from .models import User
 class UserAdmin(BaseUserAdmin):
     form = UserChangeForm
     add_form = UserCreationForm
-    list_display = ("email", "username", "is_admin")
-    list_filter = ("is_admin", "is_active")
+    list_display = ("email", "username", "is_admin", "is_teacher")
+    list_filter = ("is_admin", "is_active", "is_teacher")
     fieldsets = (
-        (None, {"fields": ("email", "password")}),
-        ("Permissions", {"fields": ("is_admin",)}),
+        (None, {"fields": ("email", "password", "is_teacher")}),
+        (
+            "Permissions",
+            {
+                "fields": (
+                    "is_admin",
+                    "is_active",
+                    "is_superuser",
+                    "groups",
+                    "user_permissions",
+                )
+            },
+        ),
     )
     add_fieldsets = (
-        None,
-        {
-            "classes": ("wide",),
-            "fields": ("email", "password1", "password2"),
-        },
+        (
+            None,
+            {
+                "classes": ("wide",),
+                "fields": ("email", "password1", "password2", "is_teacher"),
+            },
+        ),
     )
     search_fields = ("email", "username")
     ordering = ("-last_login", "email")
-    filter_horizontal = []

@@ -21,6 +21,7 @@ class UserManager(BaseUserManager):
         user = self.create_user(email, password)
         user.is_admin = True
         user.is_superuser = True
+        user.is_teacher = True
         user.save(using=self._db)
         return user
 
@@ -28,6 +29,7 @@ class UserManager(BaseUserManager):
 class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True)
     username = models.CharField(max_length=255, unique=True, blank=True, null=True)
+    is_teacher = models.BooleanField(default=False)
     is_admin = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
 
