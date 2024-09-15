@@ -1,7 +1,7 @@
-from django.views.generic import FormView
+from django.views.generic import FormView, View
 from .forms import LoginForm
-from django.shortcuts import render
-from django.contrib.auth import authenticate, login
+from django.shortcuts import render, redirect
+from django.contrib.auth import authenticate, login, logout
 
 
 class LoginView(FormView):
@@ -15,4 +15,11 @@ class LoginView(FormView):
             password=form.cleaned_data["password"],
         )
         login(self.request, user)
-        return render(self.request, "accounts/logged_in.html")
+        return redirect("home")
+
+
+class LogoutView(View):
+    def get(self, request):
+        if request.user.is_authenticated:
+            logout(request)
+        return redirect("home")
