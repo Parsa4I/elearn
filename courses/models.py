@@ -54,7 +54,7 @@ class Course(models.Model):
     )
     created = models.DateTimeField(auto_now_add=True)
     students = models.ManyToManyField(
-        settings.AUTH_USER_MODEL, related_name="courses_joined"
+        settings.AUTH_USER_MODEL, related_name="courses_joined", blank=True
     )
 
     class Meta:
