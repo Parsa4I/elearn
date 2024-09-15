@@ -8,7 +8,6 @@ from django.contrib import messages
 from .mixins import IsTeacherMixin, IsCourseOwnerMixin
 from .models import Course
 from django.urls import reverse
-from django.http import HttpResponseForbidden
 
 
 class CourseCreateView(LoginRequiredMixin, IsTeacherMixin, FormView):
