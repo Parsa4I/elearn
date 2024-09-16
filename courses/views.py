@@ -1,3 +1,6 @@
+from typing import Any
+from django.db.models.base import Model as Model
+from django.db.models.query import QuerySet
 from django.http.response import HttpResponse as HttpResponse
 from django.views.generic import FormView, DetailView, View
 from django.views.generic.base import TemplateResponseMixin
@@ -7,7 +10,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect, get_object_or_404
 from django.contrib import messages
 from .mixins import IsTeacherMixin, IsCourseOwnerMixin
-from .models import Course, Module
+from .models import Course, Module, Text, Image, Video, File
 from django.urls import reverse
 from django.forms import modelform_factory
 from django.apps import apps
@@ -51,7 +54,7 @@ class ModuleCreateView(IsCourseOwnerMixin, FormView):
         course = get_object_or_404(Course, slug=slug)
         module.course = course
         module.save()
-        return redirect(reverse("courses:detail", args=[slug]))
+        return redirect(reverse("courses:module_detail", args=[module.pk]))
 
 
 class ModuleDetailView(DetailView):
@@ -81,8 +84,8 @@ class ModuleDetailView(DetailView):
         return context
 
 
-class ContentCreateUpdateView(TemplateResponseMixin, View):
-    template_name = "courses/content_create_update.html"
+class ItemCreateUpdateView(TemplateResponseMixin, View):
+    template_name = "courses/item_create_update.html"
 
     def get_model(self, model_name):
         if model_name in ["text", "image", "video", "file"]:
@@ -118,3 +121,30 @@ class ContentCreateUpdateView(TemplateResponseMixin, View):
             item.save()
             return redirect(reverse("courses:detail", args=[item.module.course.slug]))
         return self.render_to_response({"form": form, "item": item})
+
+
+class ItemDetailView(DetailView):
+    template_name = "courses/item_detail.html"
+    context_object_name = "item"
+
+    def get_queryset(self):
+        item_type = self.kwargs["item_type"]
+        if item_type == "text":
+            return Text.objects.all()
+        elif item_type == "image":
+            return Image.objects.all()
+        elif item_type == "video":
+            return Video.objects.all()
+        elif item_type == "file":
+            return File.objects.all()
+        return None
+
+
+def download_file(request, file_pk):
+    file_obj = get_object_or_404(File, pk=file_pk)
+
+    filename = file_obj.file.name.split("/")[-1]
+    response = HttpResponse(file_obj.file, content_type="text/plain")
+    response["Content-Disposition"] = "attachment; filename=%s" % filename
+
+    return response

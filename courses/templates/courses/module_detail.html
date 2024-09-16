@@ -1,14 +1,21 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load model_name %}
 
 {% block title %}
 Module {{ module.title }}
 {% endblock %}
 
 {% block content %}
-<h1>{{ module.title }}<span class="text-muted"> by {{ module.course.teacher }}</span></h1>
+<h1>{{ module.course }}: {{ module.title }}<span class="text-muted"> by {{ module.course.teacher }}</span></h1>
 <hr>
 <p>{{ module.description }}</p>
+{% if module.course.teacher == request.user %}
+<a class="btn btn-primary" href="{% url 'courses:item_create' module.pk 'text' %}">Add new text item</a>
+<a class="btn btn-primary" href="{% url 'courses:item_create' module.pk 'image' %}">Add new image item</a>
+<a class="btn btn-primary" href="{% url 'courses:item_create' module.pk 'video' %}">Add new video item</a>
+<a class="btn btn-primary" href="{% url 'courses:item_create' module.pk 'file' %}">Add new file item</a>
+{% endif %}
 <br>
 <div class="align-items-center">
   {% for item in items %}
@@ -19,10 +26,10 @@ Module {{ module.title }}
           <b>{{ item.order }}. {{ item.title }}</b>
         </div>
         <div class="card-body">
-          <p></p>
+          <p>{{ item.updated|date:"M d, Y" }}</p>
         </div>
         <div class="card-footer">
-          <a href="#" class="btn btn-primary">View</a>
+          <a href="{% url 'courses:item_detail' item|model_name item.pk %}" class="btn btn-primary">View</a>
         </div>
       </div>
     </div>

@@ -14,13 +14,23 @@ urlpatterns = [
     ),
     path(
         "module/<int:pk>/item/<str:item_type>/create/",
-        views.ContentCreateUpdateView.as_view(),
-        name="content_create",
+        views.ItemCreateUpdateView.as_view(),
+        name="item_create",
     ),
     path(
         "module/<int:pk>/item/<str:item_type>/update/<int:item_id>",
-        views.ContentCreateUpdateView.as_view(),
-        name="content_update",
+        views.ItemCreateUpdateView.as_view(),
+        name="item_update",
     ),
     path("module/<int:pk>/", views.ModuleDetailView.as_view(), name="module_detail"),
+    path(
+        "item/<str:item_type>/<int:pk>/",
+        views.ItemDetailView.as_view(),
+        name="item_detail",
+    ),
+    path(
+        "download/<int:file_pk>/",
+        views.download_file,
+        name="download_file",
+    ),
 ]

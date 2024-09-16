@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
+from django.urls import reverse
 
 
 def validate_video_extension(value):
@@ -94,6 +95,7 @@ class ItemBase(models.Model):
         Module, on_delete=models.CASCADE, related_name="%(class)s_items"
     )
     title = models.CharField(max_length=255)
+    description = models.TextField(blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     order = models.PositiveIntegerField(blank=True)
@@ -119,14 +121,36 @@ class ItemBase(models.Model):
 class Text(ItemBase):
     content = models.TextField()
 
+    def render(self):
+        return f"""
+        <p>
+        {self.content}
+        </p>
+        """
+
 
 class Image(ItemBase):
     image = models.ImageField(upload_to="images/")
+
+    def render(self):
+        return f"""
+        <img src='{self.image.url}' class='img-fluid'>
+        """
 
 
 class Video(ItemBase):
     video = models.FileField(upload_to="videos/", validators=[validate_video_extension])
 
+    def render(self):
+        return f"""
+        <video src='{self.video.url}' class='img-fluid' controls>
+        """
+
 
 class File(ItemBase):
     file = models.FileField(upload_to="files/")
+
+    def render(self):
+        return f"""
+        <a href='{reverse("courses:download_file", args=[self.pk])}'>Download</a>
+        """
