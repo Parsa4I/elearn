@@ -1,7 +1,4 @@
-from typing import Any
 from django.contrib import admin
-from django.forms.models import ModelForm
-from django.http import HttpRequest
 from .models import Course, Subject, Module, Text, Image, Video, File
 
 

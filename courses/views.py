@@ -55,8 +55,13 @@ class ModuleCreateView(IsCourseOwnerMixin, FormView):
 
 
 class ModuleDetailView(DetailView):
-    # queryset = Module.objects.prefetch_related("items")
-    queryset = Module.objects.all()
+    queryset = (
+        Module.objects.prefetch_related("text_items")
+        .prefetch_related("image_items")
+        .prefetch_related("video_items")
+        .prefetch_related("file_items")
+    )
+    # queryset = Module.objects.all()
     template_name = "courses/module_detail.html"
     context_object_name = "module"
 
