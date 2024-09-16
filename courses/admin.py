@@ -1,4 +1,7 @@
+from typing import Any
 from django.contrib import admin
+from django.forms.models import ModelForm
+from django.http import HttpRequest
 from .models import Course, Subject, Module, Text, Image, Video, File
 
 
@@ -21,7 +24,10 @@ class ModuleAdmin(admin.ModelAdmin):
 
 
 class ItemBaseAdmin(admin.ModelAdmin):
-    list_display = ["pk", "title"]
+    list_display = ["pk", "title", "order", "module", "course"]
+
+    def course(self, obj):
+        return obj.module.course
 
 
 @admin.register(Text)

@@ -1,3 +1,4 @@
+from typing import Iterable
 from django.db import models
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
@@ -81,12 +82,12 @@ class Module(models.Model):
 
 class ItemBase(models.Model):
     module = models.ForeignKey(
-        Module, on_delete=models.CASCADE, related_name="%(class)s_contents"
+        Module, on_delete=models.CASCADE, related_name="%(class)s_items"
     )
     title = models.CharField(max_length=255)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
-    order = OrderField(for_fields=["module"])
+    order = models.PositiveIntegerField(blank=True)
 
     class Meta:
         abstract = True
@@ -95,6 +96,15 @@ class ItemBase(models.Model):
 
     def __str__(self):
         return self.title
+
+    def save(self, *args, **kwargs) -> None:
+        text_count = self.module.text_items.count()
+        image_count = self.module.image_items.count()
+        video_count = self.module.video_items.count()
+        file_count = self.module.file_items.count()
+        total_items = text_count + image_count + video_count + file_count
+        self.order = total_items + 1
+        return super().save(*args, **kwargs)
 
 
 class Text(ItemBase):

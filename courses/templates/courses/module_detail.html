@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+Module {{ module.title }}
+{% endblock %}
+
+{% block content %}
+<h1>{{ module.title }}<span class="text-muted"> by {{ module.course.teacher }}</span></h1>
+<hr>
+<p>{{ module.description }}</p>
+<br>
+<div class="align-items-center">
+  {% for item in items %}
+  <div class="row justify-content-center m-2">
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-header text-center">
+          <b>{{ item.order }}. {{ item.title }}</b>
+        </div>
+        <div class="card-body">
+          <p></p>
+        </div>
+        <div class="card-footer">
+          <a href="#" class="btn btn-primary">View</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

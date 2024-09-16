@@ -22,4 +22,5 @@ urlpatterns = [
         views.ContentCreateUpdateView.as_view(),
         name="content_update",
     ),
+    path("module/<int:pk>/", views.ModuleDetailView.as_view(), name="module_detail"),
 ]

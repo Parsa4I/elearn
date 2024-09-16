@@ -12,6 +12,7 @@ from django.urls import reverse
 from django.forms import modelform_factory
 from django.apps import apps
 from django.http import HttpResponseNotFound
+from itertools import chain
 
 
 class CourseCreateView(LoginRequiredMixin, IsTeacherMixin, FormView):
@@ -28,7 +29,7 @@ class CourseCreateView(LoginRequiredMixin, IsTeacherMixin, FormView):
 
 
 class CourseDetailView(DetailView):
-    queryset = Course.objects.all()
+    queryset = Course.objects.prefetch_related("modules")
     template_name = "courses/course_detail.html"
     context_object_name = "course"
     lookup_field = "slug"
@@ -51,6 +52,29 @@ class ModuleCreateView(IsCourseOwnerMixin, FormView):
         module.course = course
         module.save()
         return redirect(reverse("courses:detail", args=[slug]))
+
+
+class ModuleDetailView(DetailView):
+    # queryset = Module.objects.prefetch_related("items")
+    queryset = Module.objects.all()
+    template_name = "courses/module_detail.html"
+    context_object_name = "module"
+
+    def get_sorted_items(self):
+        module = self.get_object()
+        text_items = module.text_items.all()
+        image_items = module.image_items.all()
+        video_items = module.video_items.all()
+        file_items = module.file_items.all()
+
+        items = list(chain(text_items, image_items, video_items, file_items))
+        items = sorted(items, key=lambda item: item.order)
+        return items
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["items"] = self.get_sorted_items()
+        return context
 
 
 class ContentCreateUpdateView(TemplateResponseMixin, View):
