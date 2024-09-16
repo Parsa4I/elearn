@@ -61,7 +61,6 @@ class ModuleDetailView(DetailView):
         .prefetch_related("video_items")
         .prefetch_related("file_items")
     )
-    # queryset = Module.objects.all()
     template_name = "courses/module_detail.html"
     context_object_name = "module"
 
