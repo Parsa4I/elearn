@@ -3,6 +3,16 @@ from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 
 
+def validate_video_extension(value):
+    import os
+    from django.core.exceptions import ValidationError
+
+    ext = os.path.splitext(value.name)[1]
+    valid_extensions = [".mp4", ".mkv"]
+    if not ext.lower() in valid_extensions:
+        raise ValidationError("Unsupported video file. Only MP4 and MKV is accepted.")
+
+
 class OrderField(models.PositiveIntegerField):
     def __init__(self, for_fields=None, *args, **kwargs):
         self.for_fields = for_fields
@@ -115,7 +125,7 @@ class Image(ItemBase):
 
 
 class Video(ItemBase):
-    video = models.FileField(upload_to="videos/")
+    video = models.FileField(upload_to="videos/", validators=[validate_video_extension])
 
 
 class File(ItemBase):
