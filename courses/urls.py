@@ -12,4 +12,14 @@ urlpatterns = [
         views.ModuleCreateView.as_view(),
         name="module_create",
     ),
+    path(
+        "module/<int:pk>/item/<str:item_type>/create/",
+        views.ContentCreateUpdateView.as_view(),
+        name="content_create",
+    ),
+    path(
+        "module/<int:pk>/item/<str:item_type>/update/<int:item_id>",
+        views.ContentCreateUpdateView.as_view(),
+        name="content_update",
+    ),
 ]

@@ -1,13 +1,17 @@
 from django.http.response import HttpResponse as HttpResponse
-from django.views.generic import FormView, DetailView
+from django.views.generic import FormView, DetailView, View
+from django.views.generic.base import TemplateResponseMixin
 from .forms import CourseCreateForm, ModuleCreateForm
 from django.utils.text import slugify
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect, get_object_or_404
 from django.contrib import messages
 from .mixins import IsTeacherMixin, IsCourseOwnerMixin
-from .models import Course
+from .models import Course, Module
 from django.urls import reverse
+from django.forms import modelform_factory
+from django.apps import apps
+from django.http import HttpResponseNotFound
 
 
 class CourseCreateView(LoginRequiredMixin, IsTeacherMixin, FormView):
@@ -47,3 +51,42 @@ class ModuleCreateView(IsCourseOwnerMixin, FormView):
         module.course = course
         module.save()
         return redirect(reverse("courses:detail", args=[slug]))
+
+
+class ContentCreateUpdateView(TemplateResponseMixin, View):
+    template_name = "courses/content_create_update.html"
+
+    def get_model(self, model_name):
+        if model_name in ["text", "image", "video", "file"]:
+            return apps.get_model("courses", model_name)
+        return None
+
+    def get(self, request, pk, item_type, item_id=None):
+        get_object_or_404(Module, pk=pk)
+        model = self.get_model(item_type)
+        if not model:
+            return HttpResponseNotFound()
+        item = None
+        if item_id:
+            item = get_object_or_404(model, pk=item_id)
+        form = modelform_factory(
+            model, exclude=["created", "updated", "order", "module"]
+        )(instance=item)
+        return self.render_to_response({"form": form, "item": item})
+
+    def post(self, request, pk, item_type, item_id=None):
+        model = self.get_model(item_type)
+        if not model:
+            return HttpResponseNotFound()
+        item = None
+        if item_id:
+            item = get_object_or_404(model, pk=item_id)
+        form = modelform_factory(
+            model, exclude=["created", "updated", "order", "module"]
+        )(instance=item, data=request.POST, files=request.FILES)
+        if form.is_valid():
+            item = form.save(commit=False)
+            item.module = get_object_or_404(Module, pk=pk)
+            item.save()
+            return redirect(reverse("courses:detail", args=[item.module.course.slug]))
+        return self.render_to_response({"form": form, "item": item})
