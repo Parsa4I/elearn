@@ -112,12 +112,12 @@ class Text(ItemBase):
 
 
 class Image(ItemBase):
-    image = models.ImageField(upload_to="media/images")
+    image = models.ImageField(upload_to="images/")
 
 
 class Video(ItemBase):
-    video = models.FileField(upload_to="media/videos")
+    video = models.FileField(upload_to="videos/")
 
 
 class File(ItemBase):
-    file = models.FileField(upload_to="media/files")
+    file = models.FileField(upload_to="files/")
