@@ -53,3 +53,9 @@ class SignupForm(forms.Form):
         if pw1 and pw2 and pw1 != pw2:
             raise ValidationError("Passwords must match.")
         return pw2
+
+
+class ProfileCompleteForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ["username", "first_name", "last_name"]

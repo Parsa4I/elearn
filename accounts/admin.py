@@ -8,10 +8,22 @@ from .models import User
 class UserAdmin(BaseUserAdmin):
     form = UserChangeForm
     add_form = UserCreationForm
-    list_display = ("email", "username", "is_admin", "is_teacher")
-    list_filter = ("is_admin", "is_active", "is_teacher")
+    list_display = ("email", "username", "is_admin", "is_instructor")
+    list_filter = ("is_admin", "is_active", "is_instructor")
     fieldsets = (
-        (None, {"fields": ("email", "password", "is_teacher")}),
+        (
+            None,
+            {
+                "fields": (
+                    "email",
+                    "password",
+                    "is_instructor",
+                    "username",
+                    "first_name",
+                    "last_name",
+                )
+            },
+        ),
         (
             "Permissions",
             {
@@ -30,7 +42,7 @@ class UserAdmin(BaseUserAdmin):
             None,
             {
                 "classes": ("wide",),
-                "fields": ("email", "password1", "password2", "is_teacher"),
+                "fields": ("email", "password1", "password2", "is_instructor"),
             },
         ),
     )
