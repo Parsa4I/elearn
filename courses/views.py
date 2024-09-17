@@ -1,6 +1,4 @@
-from typing import Any
 from django.db.models.base import Model as Model
-from django.db.models.query import QuerySet
 from django.http.response import HttpResponse as HttpResponse
 from django.views.generic import FormView, DetailView, View
 from django.views.generic.base import TemplateResponseMixin
