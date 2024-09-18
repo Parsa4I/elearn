@@ -6,6 +6,8 @@ from django.shortcuts import redirect
 from django.contrib.auth import authenticate, login, logout
 from .models import User
 from django.urls import reverse
+from django.shortcuts import get_object_or_404
+from django.http import HttpResponseNotFound
 
 
 class LoginView(FormView):
@@ -59,4 +61,27 @@ class ProfileCompleteView(TemplateResponseMixin, LoginRequiredMixin, View):
 class ProfileView(DetailView):
     template_name = "accounts/profile.html"
     queryset = User.objects.all()
-    context_object_name = "user"
+    context_object_name = "profile"
+
+    def dispatch(self, request, *args, **kwargs):
+        user = request.user
+        profile = get_object_or_404(User, pk=kwargs["pk"])
+        if not profile.is_instructor:
+            if not user.is_authenticated or profile != user:
+                return HttpResponseNotFound()
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.request.user
+        profile = context["profile"]
+        if profile.is_instructor:
+            context["courses_created"] = profile.courses_created.all()
+            if user.is_authenticated:
+                if user == profile:
+                    context["courses_joined"] = profile.courses_joined.all()
+        else:
+            if user.is_authenticated:
+                if user == profile:
+                    context["courses_joined"] = profile.courses_joined.all()
+        return context

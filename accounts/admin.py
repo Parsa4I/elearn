@@ -8,7 +8,7 @@ from .models import User
 class UserAdmin(BaseUserAdmin):
     form = UserChangeForm
     add_form = UserCreationForm
-    list_display = ("email", "username", "is_admin", "is_instructor")
+    list_display = ("pk", "email", "username", "is_admin", "is_instructor")
     list_filter = ("is_admin", "is_active", "is_instructor")
     fieldsets = (
         (
