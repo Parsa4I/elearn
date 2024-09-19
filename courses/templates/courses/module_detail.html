@@ -28,9 +28,16 @@ Module {{ module.title }}
         <div class="card-body">
           <p>{{ item.updated|date:"M d, Y" }}</p>
         </div>
+        {% if user in module.course.students %}
         <div class="card-footer">
           <a href="{% url 'courses:item_detail' item|model_name item.pk %}" class="btn btn-primary">View</a>
         </div>
+        {% else %}
+        <div class="card-footer">
+          You do not have access to this course. <a href="{% url 'courses:detail' module.course.slug %}">Enroll</a> to
+          view the contents.
+        </div>
+        {% endif %}
       </div>
     </div>
   </div>

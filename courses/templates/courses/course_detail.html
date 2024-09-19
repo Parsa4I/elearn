@@ -6,7 +6,15 @@ Course {{ course.title }}
 {% endblock %}
 
 {% block content %}
-<h1>{{ course.title }}<span class="text-muted"> by {{ course.teacher }}</span></h1>
+<h1>
+  {{ course.title }}<span class="text-muted"> by {{ course.teacher }}</span>
+</h1>
+{% if course not in user.courses_joined.all and course.teacher != user %}
+<form method="post" action="{% url 'courses:enroll' course.slug %}">
+  {% csrf_token %}
+  <button class="btn btn-primary" type="submit">Enroll Now!</button>
+</form>
+{% endif %}
 <hr>
 <p>{{ course.overview }}</p>
 {% if request.user == course.teacher %}

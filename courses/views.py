@@ -24,6 +24,7 @@ class CourseCreateView(LoginRequiredMixin, IsTeacherMixin, FormView):
         course = form.save(commit=False)
         course.slug = slugify(course.title)
         course.teacher = self.request.user
+        course.students.add(self.request.user)
         course.save()
         messages.success(self.request, f"Course {course.title} created successfully.")
         return redirect("courses:detail")
@@ -92,8 +93,8 @@ class ItemCreateUpdateView(TemplateResponseMixin, View):
         return super().dispatch(request, *args, **kwargs)
 
     def get_model(self, model_name):
-        if model_name in ["text", "image", "video", "file"]:
-            return apps.get_model("courses", model_name)
+        if model_name.lower() in ["text", "image", "video", "file"]:
+            return apps.get_model("courses", model_name.lower())
         return None
 
     def get(self, request, pk, item_type, item_id=None):
@@ -131,6 +132,19 @@ class ItemDetailView(DetailView):
     template_name = "courses/item_detail.html"
     context_object_name = "item"
 
+    def dispatch(self, request, *args, **kwargs):
+        item = get_object_or_404(
+            apps.get_model("courses", kwargs["item_type"].lower()), pk=kwargs["pk"]
+        )
+        if (
+            request.user not in item.module.course.students.all()
+            and request.user != item.module.course.teacher
+        ):
+            return HttpResponseForbidden(
+                f"You do not have access to contents of this course. <a href='{reverse('courses:detail', args=[item.module.course.slug])}'>Enroll</a>"
+            )
+        return super().dispatch(request, *args, **kwargs)
+
     def get_queryset(self):
         item_type = self.kwargs["item_type"]
         if item_type == "text":
@@ -152,3 +166,14 @@ def download_file(request, file_pk):
     response["Content-Disposition"] = "attachment; filename=%s" % filename
 
     return response
+
+
+class CourseEnroll(LoginRequiredMixin, View):
+    def post(self, request, slug):
+        course = get_object_or_404(Course, slug=slug)
+        if request.user not in course.students.all():
+            course.students.add(request.user)
+            messages.success(request, f"You have been enrolled in {course}.")
+            return redirect(reverse("courses:detail", args=[course.slug]))
+        messages.error(request, f"You have already been enrolled in {course}.")
+        return redirect(reverse("courses:detail", args=[course.slug]))

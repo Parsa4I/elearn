@@ -28,6 +28,7 @@ urlpatterns = [
         views.ItemDetailView.as_view(),
         name="item_detail",
     ),
+    path("<slug:slug>/enroll/", views.CourseEnroll.as_view(), name="enroll"),
     path(
         "download/<int:file_pk>/",
         views.download_file,
