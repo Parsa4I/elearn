@@ -14,6 +14,8 @@ from django.forms import modelform_factory
 from django.apps import apps
 from django.http import HttpResponseNotFound, HttpResponseForbidden
 from itertools import chain
+from stars.forms import StarsForm
+from stars.models import Star
 
 
 class CourseCreateView(LoginRequiredMixin, IsTeacherMixin, FormView):
@@ -35,6 +37,17 @@ class CourseDetailView(DetailView):
     template_name = "courses/course_detail.html"
     context_object_name = "course"
     lookup_field = "slug"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["form"] = StarsForm()
+        rated = Star.objects.filter(
+            user=self.request.user,
+            object_id=context["course"].pk,
+            content_type__model="course",
+        ).exists()
+        context["rated"] = rated
+        return context
 
 
 class ModuleCreateView(IsCourseOwnerMixin, FormView):
