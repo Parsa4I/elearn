@@ -16,6 +16,7 @@ from django.http import HttpResponseNotFound, HttpResponseForbidden
 from itertools import chain
 from stars.forms import StarsForm
 from stars.models import Star
+from django.db.models.aggregates import Avg
 
 
 class CourseCreateView(LoginRequiredMixin, IsTeacherMixin, FormView):
@@ -41,12 +42,18 @@ class CourseDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["form"] = StarsForm()
-        rated = Star.objects.filter(
-            user=self.request.user,
-            object_id=context["course"].pk,
-            content_type__model="course",
-        ).exists()
+        rated = False
+        if self.request.user.is_authenticated:
+            rated = Star.objects.filter(
+                content_type__model="course",
+                user=self.request.user,
+                object_id=context["course"].pk,
+            ).exists()
         context["rated"] = rated
+        context["avg_rate"] = Star.objects.filter(
+            content_type__model="course", object_id=context["course"].pk
+        ).aggregate(points=Avg("points"))["points"]
+
         return context
 
 

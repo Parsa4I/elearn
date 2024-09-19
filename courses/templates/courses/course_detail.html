@@ -9,6 +9,7 @@ Course {{ course.title }}
 {% block content %}
 <h1>
   {{ course.title }}<span class="text-muted"> by {{ course.teacher }}</span>
+  | <small class="text-sm"> ⭐ {% if avg_rate %} {{ avg_rate }} {% else %} No ratings yet {% endif %}</small>
 </h1>
 {% if course not in user.courses_joined.all and course.teacher != user %}
 <form method="post" action="{% url 'courses:enroll' course.slug %}">
