@@ -12,7 +12,7 @@ from .models import Course, Module, Text, Image, Video, File
 from django.urls import reverse
 from django.forms import modelform_factory
 from django.apps import apps
-from django.http import HttpResponseNotFound
+from django.http import HttpResponseNotFound, HttpResponseForbidden
 from itertools import chain
 
 
@@ -84,6 +84,12 @@ class ModuleDetailView(DetailView):
 
 class ItemCreateUpdateView(TemplateResponseMixin, View):
     template_name = "courses/item_create_update.html"
+
+    def dispatch(self, request, *args, **kwargs):
+        module = get_object_or_404(Module, pk=kwargs["pk"])
+        if module.course.teacher != request.user:
+            return HttpResponseForbidden()
+        return super().dispatch(request, *args, **kwargs)
 
     def get_model(self, model_name):
         if model_name in ["text", "image", "video", "file"]:
