@@ -135,7 +135,7 @@ class Text(ItemBase):
         """
 
     def get_absolute_url(self):
-        return reverse("item_detail", args=["text", self.pk])
+        return reverse("courses:item_detail", args=["text", self.pk])
 
 
 class Image(ItemBase):
@@ -147,7 +147,7 @@ class Image(ItemBase):
         """
 
     def get_absolute_url(self):
-        return reverse("item_detail", args=["image", self.pk])
+        return reverse("courses:item_detail", args=["image", self.pk])
 
 
 class Video(ItemBase):
@@ -159,7 +159,7 @@ class Video(ItemBase):
         """
 
     def get_absolute_url(self):
-        return reverse("item_detail", args=["video", self.pk])
+        return reverse("courses:item_detail", args=["video", self.pk])
 
 
 class File(ItemBase):
@@ -171,4 +171,4 @@ class File(ItemBase):
         """
 
     def get_absolute_url(self):
-        return reverse("item_detail", args=["file", self.pk])
+        return reverse("courses:item_detail", args=["file", self.pk])

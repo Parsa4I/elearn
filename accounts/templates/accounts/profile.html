@@ -33,7 +33,7 @@ Profile
           <p>{{ course.overview }}</p>
         </div>
         <div class="card-footer">
-          <a href="{% url 'courses:detail' course.slug %}" class="btn btn-primary">View</a>
+          <a href="{{ course.get_absolute_url }}" class="btn btn-primary">View</a>
         </div>
       </div>
     </div>
@@ -60,7 +60,7 @@ Profile
           <p>{{ course.overview }}</p>
         </div>
         <div class="card-footer">
-          <a href="{% url 'courses:detail' course.slug %}" class="btn btn-primary">View</a>
+          <a href="{{ course.get_absolute_url }}" class="btn btn-primary">View</a>
         </div>
       </div>
     </div>

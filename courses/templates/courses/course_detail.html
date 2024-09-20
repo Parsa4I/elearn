@@ -41,7 +41,7 @@ Course {{ course.title }}
           <p>{{ module.description }}</p>
         </div>
         <div class="card-footer">
-          <a href="{% url 'courses:module_detail' module.pk %}" class="btn btn-primary">View</a>
+          <a href="{{ module.get_absolute_url }}" class="btn btn-primary">View</a>
         </div>
       </div>
     </div>
