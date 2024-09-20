@@ -4,6 +4,7 @@ from django.contrib.auth.models import (
     BaseUserManager,
     PermissionsMixin,
 )
+from django.urls import reverse
 
 
 class UserManager(BaseUserManager):
@@ -47,3 +48,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     @property
     def is_staff(self):
         return self.is_admin
+
+    def get_absolute_url(self):
+        return reverse("accounts:profile", args=[self.pk])

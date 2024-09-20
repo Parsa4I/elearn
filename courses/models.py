@@ -75,6 +75,9 @@ class Course(models.Model):
     def __str__(self):
         return self.title
 
+    def get_absolute_url(self):
+        return reverse("courses:detail", args=[self.slug])
+
 
 class Module(models.Model):
     course = models.ForeignKey(Course, related_name="modules", on_delete=models.CASCADE)
@@ -88,6 +91,9 @@ class Module(models.Model):
     class Meta:
         ordering = ["order"]
         indexes = [models.Index(fields=["order"])]
+
+    def get_absolute_url(self):
+        return reverse("courses:module_detail", args=[self.pk])
 
 
 class ItemBase(models.Model):
@@ -128,6 +134,9 @@ class Text(ItemBase):
         </p>
         """
 
+    def get_absolute_url(self):
+        return reverse("item_detail", args=["text", self.pk])
+
 
 class Image(ItemBase):
     image = models.ImageField(upload_to="images/")
@@ -136,6 +145,9 @@ class Image(ItemBase):
         return f"""
         <img src='{self.image.url}' class='img-fluid'>
         """
+
+    def get_absolute_url(self):
+        return reverse("item_detail", args=["image", self.pk])
 
 
 class Video(ItemBase):
@@ -146,6 +158,9 @@ class Video(ItemBase):
         <video src='{self.video.url}' class='img-fluid' controls>
         """
 
+    def get_absolute_url(self):
+        return reverse("item_detail", args=["video", self.pk])
+
 
 class File(ItemBase):
     file = models.FileField(upload_to="files/")
@@ -154,3 +169,6 @@ class File(ItemBase):
         return f"""
         <a href='{reverse("courses:download_file", args=[self.pk])}'>Download</a>
         """
+
+    def get_absolute_url(self):
+        return reverse("item_detail", args=["file", self.pk])
