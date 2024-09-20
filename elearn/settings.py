@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     "courses.apps.CoursesConfig",
     "instructors.apps.InstructorsConfig",
     "stars.apps.StarsConfig",
+    "comments.apps.CommentsConfig",
 ]
 
 MIDDLEWARE = [
