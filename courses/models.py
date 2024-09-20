@@ -2,6 +2,8 @@ from django.db import models
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
+from django.contrib.contenttypes.fields import GenericRelation
+from comments.models import Comment
 
 
 def validate_video_extension(value):
@@ -65,6 +67,7 @@ class Course(models.Model):
     students = models.ManyToManyField(
         settings.AUTH_USER_MODEL, related_name="courses_joined", blank=True
     )
+    comments = GenericRelation(Comment)
 
     class Meta:
         ordering = ["-created"]

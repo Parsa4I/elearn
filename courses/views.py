@@ -18,6 +18,8 @@ from stars.forms import StarsForm
 from stars.models import Star
 from django.db.models.aggregates import Avg
 from comments.forms import CommentForm
+from comments.models import Comment
+from django.db.models import Prefetch
 
 
 class CourseCreateView(LoginRequiredMixin, IsTeacherMixin, FormView):
@@ -35,7 +37,7 @@ class CourseCreateView(LoginRequiredMixin, IsTeacherMixin, FormView):
 
 
 class CourseDetailView(DetailView):
-    queryset = Course.objects.prefetch_related("modules")
+    queryset = Course.objects.prefetch_related("modules").prefetch_related("comments")
     template_name = "courses/course_detail.html"
     context_object_name = "course"
     lookup_field = "slug"

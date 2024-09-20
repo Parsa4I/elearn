@@ -12,6 +12,7 @@ class Comment(models.Model):
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey("content_type", "object_id")
+    created = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         indexes = [models.Index(fields=["content_type", "object_id"])]
