@@ -47,5 +47,14 @@ Course {{ course.title }}
     </div>
   </div>
   {% endfor %}
+  {% if user.is_authenticated %}
+  <hr>
+  <h3>Comments</h3>
+  <form action="{% url 'comments:comment_course' course.slug %}" method="post">
+    {% csrf_token %}
+    {{ comment_form|crispy }}
+    <button class="btn btn-primary">Comment</button>
+  </form>
+  {% endif %}
 </div>
 {% endblock %}

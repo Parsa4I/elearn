@@ -17,6 +17,7 @@ from itertools import chain
 from stars.forms import StarsForm
 from stars.models import Star
 from django.db.models.aggregates import Avg
+from comments.forms import CommentForm
 
 
 class CourseCreateView(LoginRequiredMixin, IsTeacherMixin, FormView):
@@ -53,6 +54,7 @@ class CourseDetailView(DetailView):
         context["avg_rate"] = Star.objects.filter(
             content_type__model="course", object_id=context["course"].pk
         ).aggregate(points=Avg("points"))["points"]
+        context["comment_form"] = CommentForm()
 
         return context
 
