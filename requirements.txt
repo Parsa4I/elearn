@@ -3,3 +3,4 @@ django-bootstrap-v5
 django-crispy-forms
 crispy_bootstrap5
 Pillow
+psycopg2
