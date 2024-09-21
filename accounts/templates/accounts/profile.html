@@ -19,6 +19,11 @@ Profile
 {% endif %}
 
 {% else %}
+
+{% if request.user == profile %}
+<a class="btn btn-primary" href="{% url 'courses:create' %}">Create a new course</a>
+{% endif %}
+
 <h3 class="text-center">Created Courses</h3>
 <br>
 <div class="align-items-center">

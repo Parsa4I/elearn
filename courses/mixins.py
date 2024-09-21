@@ -5,7 +5,7 @@ from .models import Course
 
 class IsTeacherMixin:
     def dispatch(self, request, *args, **kwargs):
-        if not request.user.is_teacher:
+        if not request.user.is_instructor:
             return HttpResponseForbidden()
         return super().dispatch(request, *args, **kwargs)
 

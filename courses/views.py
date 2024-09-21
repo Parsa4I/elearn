@@ -31,10 +31,10 @@ class CourseCreateView(LoginRequiredMixin, IsTeacherMixin, FormView):
         course = form.save(commit=False)
         course.slug = slugify(course.title)
         course.teacher = self.request.user
-        course.students.add(self.request.user)
         course.save()
+        course.students.add(self.request.user)
         messages.success(self.request, f"Course {course.title} created successfully.")
-        return redirect("courses:detail")
+        return redirect(course.get_absolute_url())
 
 
 class CourseDetailView(DetailView):
