@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load cache %}
 {% load static %}
 {% load crispy_forms_tags %}
 
@@ -30,6 +31,7 @@ Course {{ course.title }}
 {% endif %}
 <br>
 <div class="align-items-center">
+  {% cache 1800 modules course.pk %}
   {% for module in course.modules.all %}
   <div class="row justify-content-center m-2">
     <div class="col-md-8">
@@ -47,6 +49,7 @@ Course {{ course.title }}
     </div>
   </div>
   {% endfor %}
+  {% endcache %}
   <hr>
   <h3>Comments</h3>
   {% if user.is_authenticated %}
@@ -56,6 +59,7 @@ Course {{ course.title }}
     <button class="btn btn-primary">Comment</button>
   </form>
   {% endif %}
+  {% cache 1800 comments course.pk %}
   {% for comment in course.comments.all %}
   <div class="card m-2 col-md-5">
     <div class="card-body">
@@ -65,5 +69,6 @@ Course {{ course.title }}
     </div>
   </div>
   {% endfor %}
+  {% endcache %}
 </div>
 {% endblock %}

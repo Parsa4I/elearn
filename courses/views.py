@@ -18,8 +18,9 @@ from stars.forms import StarsForm
 from stars.models import Star
 from django.db.models.aggregates import Avg
 from comments.forms import CommentForm
-from comments.models import Comment
-from django.db.models import Prefetch
+from django.core.cache import cache
+from django.core.cache import cache
+from django.core.cache.utils import make_template_fragment_key
 
 
 class CourseCreateView(LoginRequiredMixin, IsTeacherMixin, FormView):
@@ -45,6 +46,7 @@ class CourseDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["form"] = StarsForm()
+
         rated = False
         if self.request.user.is_authenticated:
             rated = Star.objects.filter(
@@ -53,9 +55,15 @@ class CourseDetailView(DetailView):
                 object_id=context["course"].pk,
             ).exists()
         context["rated"] = rated
-        context["avg_rate"] = Star.objects.filter(
-            content_type__model="course", object_id=context["course"].pk
-        ).aggregate(points=Avg("points"))["points"]
+        
+        avg_rate = cache.get(f"course_{context["course"].pk}_avg_rate")
+        if not avg_rate:
+            avg_rate = Star.objects.filter(
+                content_type__model="course", object_id=context["course"].pk
+            ).aggregate(points=Avg("points"))["points"]
+            cache.set(f"course_{context["course"].pk}_avg_rate", avg_rate, timeout=60 * 60)
+
+        context["avg_rate"] = avg_rate
         context["comment_form"] = CommentForm()
 
         return context
@@ -77,6 +85,10 @@ class ModuleCreateView(IsCourseOwnerMixin, FormView):
         course = get_object_or_404(Course, slug=slug)
         module.course = course
         module.save()
+        
+        key = make_template_fragment_key("modules", [course.pk])
+        cache.delete(key)
+
         return redirect(reverse("courses:module_detail", args=[module.pk]))
 
 
@@ -90,20 +102,27 @@ class ModuleDetailView(DetailView):
     template_name = "courses/module_detail.html"
     context_object_name = "module"
 
-    def get_sorted_items(self):
-        module = self.get_object()
-        text_items = module.text_items.all()
-        image_items = module.image_items.all()
-        video_items = module.video_items.all()
-        file_items = module.file_items.all()
+    def get_sorted_items(self, module):
+        sorted_items = cache.get(f"module_{module.pk}_items")
+        if not sorted_items:
+            module = self.get_object()
+            text_items = module.text_items.all()
+            image_items = module.image_items.all()
+            video_items = module.video_items.all()
+            file_items = module.file_items.all()
 
-        items = list(chain(text_items, image_items, video_items, file_items))
-        items = sorted(items, key=lambda item: item.order)
-        return items
+            items = list(chain(text_items, image_items, video_items, file_items))
+            items = sorted(items, key=lambda item: item.order)
+
+            cache.set(f"module_{module.pk}_items", items, timeout=60 * 5)
+
+            return items
+        return sorted_items
+
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["items"] = self.get_sorted_items()
+        context["items"] = self.get_sorted_items(context["module"])
         return context
 
 

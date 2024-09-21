@@ -4,6 +4,8 @@ from django.shortcuts import get_object_or_404, redirect
 from django.contrib.auth.mixins import LoginRequiredMixin
 from courses.models import Course
 from django.views.generic.base import TemplateResponseMixin
+from django.core.cache import cache
+from django.core.cache.utils import make_template_fragment_key
 
 
 class CommentCourseView(TemplateResponseMixin, LoginRequiredMixin, View):
@@ -17,5 +19,9 @@ class CommentCourseView(TemplateResponseMixin, LoginRequiredMixin, View):
             comment.content_object = course
             comment.user = request.user
             comment.save()
+
+            key = make_template_fragment_key("comments", [course.pk])
+            cache.delete(key)
+
             return redirect(course.get_absolute_url())
         return self.render_to_response({"comment_form": form})

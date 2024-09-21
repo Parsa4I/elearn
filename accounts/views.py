@@ -8,6 +8,7 @@ from .models import User
 from django.urls import reverse
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponseNotFound
+from django.core.cache import cache
 
 
 class LoginView(FormView):
@@ -76,12 +77,35 @@ class ProfileView(DetailView):
         user = self.request.user
         profile = context["profile"]
         if profile.is_instructor:
-            context["courses_created"] = profile.courses_created.all()
+            courses_created = cache.get(f"profile_{profile.pk}_courses_created")
+            if not courses_created:
+                courses_created = profile.courses_created.all()
+                cache.set(
+                    f"profile_{profile.pk}_courses_created", courses_created, 60 * 60
+                )
+            context["courses_created"] = courses_created
+
             if user.is_authenticated:
                 if user == profile:
-                    context["courses_joined"] = profile.courses_joined.all()
+                    courses_joined = cache.get(f"profile_{profile.pk}_courses_joined")
+                    if not courses_joined:
+                        courses_joined = profile.courses_joined.all()
+                        cache.set(
+                            "profile_{profile.pk}_courses_joined",
+                            courses_joined,
+                            60 * 60,
+                        )
+                    context["courses_joined"] = courses_joined
         else:
             if user.is_authenticated:
                 if user == profile:
-                    context["courses_joined"] = profile.courses_joined.all()
+                    courses_joined = cache.get(f"profile_{profile.pk}_courses_joined")
+                    if not courses_joined:
+                        courses_joined = profile.courses_joined.all()
+                        cache.set(
+                            "profile_{profile.pk}_courses_joined",
+                            courses_joined,
+                            60 * 60,
+                        )
+                    context["courses_joined"] = courses_joined
         return context
