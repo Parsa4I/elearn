@@ -12,8 +12,10 @@ services:
       - POSTGRES_USER=elearn
       - POSTGRES_PASSWORD=elearn
       - POSTGRES_HOST=db
+      - CACHE_HOST=cache
     depends_on:
       - db
+      - cache
 
   db:
     image: postgres:16.2
@@ -26,5 +28,13 @@ services:
       - POSTGRES_USER=elearn
       - POSTGRES_PASSWORD=elearn
 
+  cache:
+    image: redis
+    volumes:
+      - cache-data:/data
+    ports:
+      - 6379:6379
+
 volumes:
   db-data:
+  cache-data:
