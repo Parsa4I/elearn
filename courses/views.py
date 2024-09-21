@@ -19,7 +19,6 @@ from stars.models import Star
 from django.db.models.aggregates import Avg
 from comments.forms import CommentForm
 from django.core.cache import cache
-from django.core.cache import cache
 from django.core.cache.utils import make_template_fragment_key
 
 
