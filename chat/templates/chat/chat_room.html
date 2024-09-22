@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Chat Room
+{% endblock %}
+
+{% block content %}
+<div class="row d-flex justify-content-center">
+  <div>
+    <div class="card" id="chat1" style="border-radius: 15px;">
+      <div class="card-header d-flex justify-content-between align-items-center p-3 bg-dark text-white border-bottom-0"
+        style="border-top-left-radius: 15px; border-top-right-radius: 15px;">
+        <i class="fas fa-angle-left"></i>
+        <p class="mb-0 fw-bold">Live chat</p>
+        <i class="fas fa-times"></i>
+      </div>
+      <div class="card-body">
+
+        <div class="d-flex flex-row justify-content-start mb-4">
+          <span>Them</span>
+          <div class="p-3 ms-3 bg-primary text-white" style="border-radius: 15px;">
+            <p class="small mb-0">Hello and thank you for visiting MDBootstrap. Please click the video
+              below.</p>
+          </div>
+        </div>
+
+        <div class="d-flex flex-row justify-content-end mb-4">
+          <div class="p-3 me-3 border bg-body-tertiary bg-dark text-white" style="border-radius: 15px;">
+            <p class="small mb-0">Thank you, I really like your product.</p>
+          </div>
+          <span>You</span>
+        </div>
+
+        <div data-mdb-input-init class="form-outline">
+          <textarea class="form-control bg-body-tertiary" id="textAreaExample" rows="2"></textarea>
+          <label class="form-label" for="textAreaExample">Type your message</label>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
