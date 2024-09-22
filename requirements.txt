@@ -5,3 +5,5 @@ crispy_bootstrap5
 Pillow
 psycopg2
 redis
+channels[daphne]
+djangorestframework
