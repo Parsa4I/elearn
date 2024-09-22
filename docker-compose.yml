@@ -12,7 +12,7 @@ services:
       - POSTGRES_USER=elearn
       - POSTGRES_PASSWORD=elearn
       - POSTGRES_HOST=db
-      - CACHE_HOST=cache
+      - CACHE_LOCATION=redis://cache:6379
     depends_on:
       - db
       - cache
