@@ -11,6 +11,9 @@ class ChatRoomView(LoginRequiredMixin, TemplateResponseMixin, View):
 
     def get(self, request, slug):
         course = get_object_or_404(Course, slug=slug)
-        if course not in request.user.courses_joined.all():
+        if (
+            course not in request.user.courses_joined.all()
+            and request.user != course.teacher
+        ):
             return HttpResponseForbidden()
         return self.render_to_response({"course": course})
