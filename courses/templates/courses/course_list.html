@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Search
+{% endblock %}
+
+{% block content %}
+<h2>Courses{% if q %}: {{ q }} {% endif %}</h2>
+<div class="row">
+  {% for course in courses %}
+  <div class="col-sm-6">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">{{ course.title }} <span class="text-muted">| by {{ course.teacher }}</span></h5>
+        <p class="card-text">{{ course.overview }}</p>
+        <a href="{{ course.get_absolute_url }}" class="btn btn-primary">View</a>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

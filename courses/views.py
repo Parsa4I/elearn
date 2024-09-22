@@ -1,6 +1,7 @@
+from typing import Any
 from django.db.models.base import Model as Model
 from django.http.response import HttpResponse as HttpResponse
-from django.views.generic import FormView, DetailView, View
+from django.views.generic import FormView, DetailView, View, ListView
 from django.views.generic.base import TemplateResponseMixin
 from .forms import CourseCreateForm, ModuleCreateForm
 from django.utils.text import slugify
@@ -20,6 +21,7 @@ from django.db.models.aggregates import Avg
 from comments.forms import CommentForm
 from django.core.cache import cache
 from django.core.cache.utils import make_template_fragment_key
+from django.contrib.postgres.search import SearchVector, SearchRank, SearchQuery
 
 
 class CourseCreateView(LoginRequiredMixin, IsTeacherMixin, FormView):
@@ -219,3 +221,41 @@ class CourseEnroll(LoginRequiredMixin, View):
             return redirect(reverse("courses:detail", args=[course.slug]))
         messages.error(request, f"You have already been enrolled in {course}.")
         return redirect(reverse("courses:detail", args=[course.slug]))
+
+
+class CourseListView(ListView):
+    queryset = Course.objects.all()
+    template_name = "courses/course_list.html"
+    context_object_name = "courses"
+
+    def get_queryset(self):
+        q = self.request.GET.get("q")
+        queryset = super().get_queryset()
+        if q:
+            vector = (
+                SearchVector("title", weight="A") +
+                SearchVector("overview", weight="A") +
+                SearchVector("teacher__username", weight="B") +
+                SearchVector("teacher__email", weight="C") +
+                SearchVector("subject", weight="B") +
+                SearchVector("teacher__first_name", weight="D") +
+                SearchVector("teacher__last_name", weight="D")
+            )
+            query = SearchQuery(q)
+
+            queryset = queryset.annotate(
+                search=vector,
+                rank=SearchRank(vector, query)
+            ).filter(
+                search=query
+            ).order_by(
+                "-rank"
+            )
+
+        print(queryset)
+        return queryset
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["q"] = self.request.GET.get("q")
+        return context
