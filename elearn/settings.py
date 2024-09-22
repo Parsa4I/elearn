@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     "instructors.apps.InstructorsConfig",
     "stars.apps.StarsConfig",
     "comments.apps.CommentsConfig",
+    "chat.apps.ChatConfig",
 ]
 
 MIDDLEWARE = [
