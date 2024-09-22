@@ -7,16 +7,45 @@ Search
 {% block content %}
 <h2>Courses{% if q %}: {{ q }} {% endif %}</h2>
 <div class="row">
-  {% for course in courses %}
-  <div class="col-sm-6">
+  {% for course in page_obj %}
+  <div class="col-sm-6 mt-3">
     <div class="card">
       <div class="card-body">
-        <h5 class="card-title">{{ course.title }} <span class="text-muted">| by {{ course.teacher }}</span></h5>
+        <h5 class="card-title">{{ course.title }} <span class="text-muted">
+            | by {{ course.teacher }} | Subject: {{ course.subject }}</span></h5>
         <p class="card-text">{{ course.overview }}</p>
         <a href="{{ course.get_absolute_url }}" class="btn btn-primary">View</a>
       </div>
     </div>
   </div>
+  {% empty %}
+  <h3>No Results</h3>
   {% endfor %}
+  <nav aria-label="..." class="d-flex justify-content-center mt-4">
+    <ul class="pagination">
+      {% if page_obj.has_previous %}
+      <li class="page-item">
+        <a class="page-link" href="?page={{ page_obj.previous_page_number }}" tabindex="-1">Previous</a>
+      </li>
+      {% else %}
+      <li class="page-item disabled">
+        <a class="page-link" href="#" tabindex="-1">Previous</a>
+      </li>
+      {% endif %}
+      <li class="page-item active">
+        <a class="page-link" href="">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }} <span
+            class="sr-only"></span></a>
+      </li>
+      {% if page_obj.has_next %}
+      <li class="page-item">
+        <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+      </li>
+      {% else %}
+      <li class="page-item disabled">
+        <a class="page-link" href="#">Next</a>
+      </li>
+      {% endif %}
+    </ul>
+  </nav>
 </div>
 {% endblock %}

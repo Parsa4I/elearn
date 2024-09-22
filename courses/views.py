@@ -227,6 +227,7 @@ class CourseListView(ListView):
     queryset = Course.objects.all()
     template_name = "courses/course_list.html"
     context_object_name = "courses"
+    paginate_by = 4
 
     def get_queryset(self):
         q = self.request.GET.get("q")
@@ -237,7 +238,7 @@ class CourseListView(ListView):
                 SearchVector("overview", weight="A") +
                 SearchVector("teacher__username", weight="B") +
                 SearchVector("teacher__email", weight="C") +
-                SearchVector("subject", weight="B") +
+                SearchVector("subject__title", weight="B") +
                 SearchVector("teacher__first_name", weight="D") +
                 SearchVector("teacher__last_name", weight="D")
             )
@@ -251,8 +252,6 @@ class CourseListView(ListView):
             ).order_by(
                 "-rank"
             )
-
-        print(queryset)
         return queryset
     
     def get_context_data(self, **kwargs):
