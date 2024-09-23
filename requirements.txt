@@ -6,4 +6,5 @@ Pillow
 psycopg2
 redis
 channels[daphne]
+channels_redis
 djangorestframework
