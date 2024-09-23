@@ -15,17 +15,21 @@ Chat Room
         <p class="mb-0 fw-bold">{{ course }} live chat</p>
         <i class="fas fa-times"></i>
       </div>
-      <div class="card-body" id="chat">
+      <div class="card-body" id="chat" style="height: 400px; overflow-y: auto;">
       </div>
       <div data-mdb-input-init class="form-outline d-flex">
         <textarea class="form-control bg-body-tertiary" id="messageArea" rows="1"></textarea>
         <button class="btn btn-primary" id="send-btn">Send</button>
       </div>
     </div>
-
   </div>
 </div>
 
 {{ course.title|json_script:"course" }}
+{% if user.username %}
+{{ user.username|json_script:"user" }}
+{% else %}
+{{ user.email|json_script:"user" }}
+{% endif %}
 <script src="{% static 'chat/js/chat_room.js' %}"></script>
 {% endblock %}

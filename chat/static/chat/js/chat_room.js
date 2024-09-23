@@ -10,13 +10,26 @@ const chatSocket = new WebSocket(
 
 chatSocket.onmessage = function (e) {
     const data = JSON.parse(e.data);
-    document.getElementById("chat").innerHTML += `<div class="d-flex flex-row justify-content-start mb-4">
-          <span>Them</span>
-          <div class="p-3 ms-3 bg-primary text-white" style="border-radius: 15px;">
+    var chatDiv = document.getElementById("chat");
+
+    if (JSON.parse(document.getElementById("user").textContent) === data.user) {
+        chatDiv.innerHTML += `<div class="d-flex flex-row justify-content-end mb-4">
+          <div class="p-3 me-3 border bg-body-tertiary" style="border-radius: 15px;">
             <p class="small mb-0">${data.message}</p>
           </div>
+          <span>${data.user}</span>
         </div>`;
-    console.log(data.message);
+    }
+    else {
+        chatDiv.innerHTML += `<div class="d-flex flex-row justify-content-start mb-4">
+              <span>${data.user}</span>
+              <div class="p-3 ms-3 bg-primary text-white" style="border-radius: 15px;">
+                <p class="small mb-0">${data.message}</p>
+              </div>
+            </div>`;
+    }
+
+    chatDiv.scrollTop = chatDiv.scrollHeight;
 }
 
 chatSocket.onclose = function (e) {
@@ -44,4 +57,3 @@ document.getElementById("send-btn").onclick = function (e) {
         messageInput.value = "";
     }
 };
-
