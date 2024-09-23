@@ -22,6 +22,9 @@ class LoginView(FormView):
             password=form.cleaned_data["password"],
         )
         login(self.request, user)
+        next = self.request.GET.get("next")
+        if next:
+            return redirect(next)
         return redirect("home")
 
 
