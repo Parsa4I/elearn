@@ -1,4 +1,5 @@
-const roomName = JSON.parse(document.getElementById("course").textContent)
+const roomName = JSON.parse(document.getElementById("course").textContent);
+const currentUser = JSON.parse(document.getElementById("user").textContent);
 
 const chatSocket = new WebSocket(
     "ws://" +
@@ -8,28 +9,30 @@ const chatSocket = new WebSocket(
     "/"
 );
 
-chatSocket.onmessage = function (e) {
-    const data = JSON.parse(e.data);
+function addMessage(user, message) {
     var chatDiv = document.getElementById("chat");
-
-    if (JSON.parse(document.getElementById("user").textContent) === data.user) {
+    if (currentUser === user) {
         chatDiv.innerHTML += `<div class="d-flex flex-row justify-content-end mb-4">
-          <div class="p-3 me-3 border bg-body-tertiary" style="border-radius: 15px;">
-            <p class="small mb-0">${data.message}</p>
-          </div>
-          <span>${data.user}</span>
-        </div>`;
+        <div class="p-3 me-3 border bg-body-tertiary" style="border-radius: 15px;">
+          <p class="small mb-0">${message}</p>
+        </div>
+        <span>${user}</span>
+      </div>`;
     }
     else {
         chatDiv.innerHTML += `<div class="d-flex flex-row justify-content-start mb-4">
-              <span>${data.user}</span>
+              <span>${user}</span>
               <div class="p-3 ms-3 bg-primary text-white" style="border-radius: 15px;">
-                <p class="small mb-0">${data.message}</p>
+                <p class="small mb-0">${message}</p>
               </div>
             </div>`;
     }
-
     chatDiv.scrollTop = chatDiv.scrollHeight;
+}
+
+chatSocket.onmessage = function (e) {
+    const data = JSON.parse(e.data);
+    addMessage(data.user, data.message);
 }
 
 chatSocket.onclose = function (e) {
@@ -57,3 +60,23 @@ document.getElementById("send-btn").onclick = function (e) {
         messageInput.value = "";
     }
 };
+
+const messagesUrl = "http://" +
+    window.location.host +
+    "/chat/" +
+    roomName +
+    "/messages/";
+
+fetch(messagesUrl)
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    }).then(data => {
+        data.forEach(element => {
+            addMessage(element.user, element.body);
+            console.log(element.user);
+            console.log(element.body);
+        });
+    });

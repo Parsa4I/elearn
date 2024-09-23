@@ -1,6 +1,8 @@
 from channels.generic.websocket import AsyncWebsocketConsumer
 import json
 from django.utils import timezone
+from .models import ChatMessage
+from courses.models import Course
 
 
 class ChatConsumer(AsyncWebsocketConsumer):
@@ -18,6 +20,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
         text_data_json = json.loads(text_data)
         message = text_data_json["message"]
 
+        course = await Course.objects.aget(slug=self.room_name)
+        await ChatMessage.objects.acreate(user=self.user, course=course, body=message)
         await self.channel_layer.group_send(
             self.room_group_name,
             {
@@ -29,5 +33,5 @@ class ChatConsumer(AsyncWebsocketConsumer):
         )
 
     async def chat_message(self, event):
-        message = event["message"]
+        event["message"]
         await self.send(json.dumps(event))

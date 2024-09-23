@@ -25,7 +25,7 @@ Chat Room
   </div>
 </div>
 
-{{ course.title|json_script:"course" }}
+{{ course.slug|json_script:"course" }}
 {% if user.username %}
 {{ user.username|json_script:"user" }}
 {% else %}

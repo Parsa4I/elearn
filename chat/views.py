@@ -4,6 +4,10 @@ from courses.models import Course
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseForbidden
+from rest_framework.generics import ListAPIView
+from .serializers import ChatMessageSerializer
+from .models import ChatMessage
+from django.shortcuts import get_object_or_404
 
 
 class ChatRoomView(LoginRequiredMixin, TemplateResponseMixin, View):
@@ -17,3 +21,11 @@ class ChatRoomView(LoginRequiredMixin, TemplateResponseMixin, View):
         ):
             return HttpResponseForbidden()
         return self.render_to_response({"course": course})
+
+
+class ChatMessageDetailAPIView(ListAPIView):
+    serializer_class = ChatMessageSerializer
+
+    def get_queryset(self):
+        course = get_object_or_404(Course, slug=self.kwargs["slug"])
+        return ChatMessage.objects.filter(course=course)
