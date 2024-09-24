@@ -3,6 +3,7 @@ import json
 from django.utils import timezone
 from .models import ChatMessage
 from courses.models import Course
+from django.core.cache import cache
 
 
 class ChatConsumer(AsyncWebsocketConsumer):
@@ -22,6 +23,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         course = await Course.objects.aget(slug=self.room_name)
         await ChatMessage.objects.acreate(user=self.user, course=course, body=message)
+        await cache.adelete_many([f"messages_{self.room_name}"])
         await self.channel_layer.group_send(
             self.room_group_name,
             {

@@ -8,6 +8,7 @@ from rest_framework.generics import ListAPIView
 from .serializers import ChatMessageSerializer
 from .models import ChatMessage
 from django.shortcuts import get_object_or_404
+from django.core.cache import cache
 
 
 class ChatRoomView(LoginRequiredMixin, TemplateResponseMixin, View):
@@ -27,5 +28,12 @@ class ChatMessageDetailAPIView(ListAPIView):
     serializer_class = ChatMessageSerializer
 
     def get_queryset(self):
-        course = get_object_or_404(Course, slug=self.kwargs["slug"])
-        return ChatMessage.objects.filter(course=course)
+        course_slug = self.kwargs["slug"]
+        messages = cache.get(f"messages_{course_slug}")
+
+        if not messages:
+            course = get_object_or_404(Course, slug=self.kwargs["slug"])
+            messages = ChatMessage.objects.filter(course=course)
+            cache.set(f"messages_{course_slug}", messages, 10 * 60)
+
+        return messages

@@ -26,6 +26,9 @@ Course {{ course.title }}
 {% endif %}
 <hr>
 <p>{{ course.overview }}</p>
+{% if request.user == course.teacher or request.user in course.students.all %}
+<a href="{% url 'chat:chat_room' course.slug %}" class="btn btn-primary">Chat Room</a>
+{% endif %}
 {% if request.user == course.teacher %}
 <a href="{% url 'courses:module_create' course.slug %}" class="btn btn-primary">Add new module</a>
 {% endif %}
