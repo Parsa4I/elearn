@@ -28,9 +28,9 @@ Module {{ module.title }}
         <div class="card-body">
           <p>{{ item.updated|date:"M d, Y" }}</p>
         </div>
-        {% if user in module.course.students.all %}
+        {% if user in module.course.students.all or user == module.course.teacher %}
         <div class="card-footer">
-          <a href="{{ item.get_absolute_url }}" class="btn btn-primary">Vieww</a>
+          <a href="{{ item.get_absolute_url }}" class="btn btn-primary">View</a>
         </div>
         {% else %}
         <div class="card-footer">

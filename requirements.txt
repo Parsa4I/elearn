@@ -8,3 +8,4 @@ redis
 channels[daphne]
 channels_redis
 djangorestframework
+gunicorn

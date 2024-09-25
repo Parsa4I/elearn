@@ -7,10 +7,17 @@ Online learning and teaching platform with Django
 - ### Create modules for course in forms of text, image, video or file
 - ### Chat room for courses
 - ### Rate and comment
+- ### Redis Cache, PostgreSQL database + Gunicorn and NGINX for production environment
 
 ## Usage
 Run
 ```
 $ docker compose up
 ```
-and open `localhost:8000` on your browser :)
+and open `http://127.0.0.1:8000` on your browser :)
+
+Or for production version:
+```
+$ docker compose -f docker-compose.prod.yml up
+```
+and open `http://127.0.0.1`.

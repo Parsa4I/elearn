@@ -2,18 +2,18 @@ services:
   app:
     build:
       context: .
-    command: sh -c "./wait-for-it.sh db:5432 -- && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    command: sh -c "./wait-for-it.sh db:5432 -- && python manage.py migrate && gunicorn --bind 0.0.0.0:8000 elearn.wsgi"
     volumes:
       - .:/app
-    ports:
-      - 8000:8000
+    expose:
+      - 8000
     environment:
       - POSTGRES_DB=elearn
       - POSTGRES_USER=elearn
       - POSTGRES_PASSWORD=elearn
       - POSTGRES_HOST=db
       - CACHE_LOCATION=redis://cache:6379
-      - DJANGO_SETTINGS_MODULE=elearn.settings.local
+      - DJANGO_SETTINGS_MODULE=elearn.settings.prod
     depends_on:
       - db
       - cache
@@ -35,6 +35,16 @@ services:
       - cache-data:/data
     ports:
       - 6379:6379
+
+  nginx:
+    build: ./nginx
+    ports:
+      - 80:80
+    volumes:
+      - ./static:/app/static
+      - ./media:/app/media
+    depends_on:
+      - app
 
 volumes:
   db-data:
