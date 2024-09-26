@@ -2,7 +2,7 @@ services:
   app:
     build:
       context: .
-    command: sh -c "./wait-for-it.sh db:5432 -- && python manage.py migrate && gunicorn --bind 0.0.0.0:8000 elearn.wsgi"
+    command: sh -c "./wait-for-it.sh db:5432 -- && python manage.py migrate && gunicorn -k uvicorn.workers.UvicornWorker elearn.asgi:application --bind 0.0.0.0:8000"
     volumes:
       - .:/app
     expose:
