@@ -21,11 +21,15 @@ class LoginView(FormView):
             email=form.cleaned_data["email"],
             password=form.cleaned_data["password"],
         )
-        login(self.request, user)
-        next = self.request.GET.get("next")
-        if next:
-            return redirect(next)
-        return redirect("home")
+        if user:
+            login(self.request, user)
+            next = self.request.GET.get("next")
+            if next:
+                return redirect(next)
+            return redirect("home")
+
+        form.add_error(None, "Invalid username and/or password.")
+        return self.form_invalid(form)
 
 
 class LogoutView(View):
