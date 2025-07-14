@@ -43,7 +43,7 @@ class LoginForm(forms.Form):
 
 
 class SignupForm(forms.Form):
-    email = forms.CharField()
+    email = forms.EmailField()
     password1 = forms.CharField(label="Password", widget=forms.PasswordInput)
     password2 = forms.CharField(label="Confirm Password", widget=forms.PasswordInput)
 
