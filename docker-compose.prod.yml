@@ -2,9 +2,11 @@ services:
   app:
     build:
       context: .
-    command: sh -c "./wait-for-it.sh db:5432 -- && python manage.py migrate && gunicorn -k uvicorn.workers.UvicornWorker elearn.asgi:application --bind 0.0.0.0:8000"
+    command: sh -c "./wait-for-it.sh db:5432 -- && python manage.py migrate && python manage.py collectstatic --noinput && gunicorn -k uvicorn.workers.UvicornWorker elearn.asgi:application --bind 0.0.0.0:8000"
     volumes:
       - .:/app
+      - static-data:/app/static
+      - media-data:/app/media
     expose:
       - 8000
     environment:
@@ -41,11 +43,13 @@ services:
     ports:
       - 80:80
     volumes:
-      - ./static:/app/static
-      - ./media:/app/media
+      - static-data:/app/static
+      - media-data:/app/media
     depends_on:
       - app
 
 volumes:
   db-data:
   cache-data:
+  static-data:
+  media-data:
