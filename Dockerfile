@@ -7,6 +7,9 @@ EXPOSE 8000
 
 WORKDIR /app
 
+COPY requirements.txt /tmp/
+RUN pip install --no-cache-dir -r /tmp/requirements.txt && \
+    rm /tmp/requirements.txt
+
 COPY . .
-RUN pip install -r requirements.txt && \
-    chmod a+x ./wait-for-it.sh
+RUN chmod a+x ./wait-for-it.sh
